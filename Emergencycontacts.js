@@ -1,8 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, Button, FlatList,
+    TouchableOpacity,
+    StyleSheet, } from 'react-native';
 import { Linking } from 'react-native';
-
+const [searchTerm, setSearchTerm] = useState('');
+  
 
 // function to store contacts
 
@@ -20,12 +23,32 @@ const storeContacts = async (contacts) => {
   const getContacts = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem('emergencyContacts');
-      return jsonValue != null ? JSON.parse(jsonValue) : [];
+      const fetchedContacts = jsonValue != null ? JSON.parse(jsonValue) : [];
+      // Ensure fetchedContacts is an array of objects with a "name" property
+      if (!Array.isArray(fetchedContacts) || !fetchedContacts.every((contact) => contact.name)) {
+        console.error('Error: Invalid contact data format in AsyncStorage');
+        // Handle the error gracefully (e.g., display an error message or set an empty array)
+        setContacts([]);
+        return;
+      }
+      setContacts(fetchedContacts);
     } catch (error) {
       console.error('Error retrieving contacts:', error);
-      // Handle potential errors (e.g., return an empty array)
     }
   };
+  const filteredContacts = contacts.filter((contact) =>
+  contact.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity onPress={() => handleCall(item.phoneNumber)}>
+      <View style={styles.contactItem}>
+        <Text style={styles.contactName}>{item.name}</Text>
+        {item.category && <Text style={styles.contactCategory}>({item.category})</Text>}
+      </View>
+    </TouchableOpacity>
+  );
 
 
 const AddContactScreen = ({ navigation }) => {
@@ -112,6 +135,25 @@ const AddContactScreen = ({ navigation }) => {
       />
 
       <Button title="Save Contact" onPress={handleSaveContact} />
+
+       {/* Search bar */}
+       <TextInput
+        style={styles.searchInput}
+        placeholder="Search Contacts"
+        value={searchTerm}
+        onChangeText={setSearchTerm}
+      />
+
+      {/* Contact list */}
+      {filteredContacts.length > 0 ? (
+        <FlatList
+          data={filteredContacts}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.name} // Unique key for each item
+        />
+      ) : (
+        <Text style={styles.noContactsText}>No contacts found.</Text>
+      )}
     </View>
   );
 };
@@ -132,8 +174,28 @@ const styles = StyleSheet.create({
     padding: 8,
     marginBottom: 10,
   },
+  searchInput: {
+    // Styles for search bar input
+    fontSize: 16,
+    padding: 10,
+    backgroundColor: '#f5f5f5', // Light background
+    borderRadius: 5, // Rounded corners
+  },
+  contactItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd', // Light border
+  },
+  contactName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  contactCategory: {
+    fontSize: 14,
+    color: '#ccc', // Light gray text for category
+  },
 });
 
-export default AddContactScreen;
+export default Emergencycontacts;
 
   
