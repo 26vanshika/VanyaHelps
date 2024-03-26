@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, Button, FlatList,
+  TouchableOpacity,
+  StyleSheet, } from 'react-native';
 import { Linking } from 'react-native';
 const [searchTerm, setSearchTerm] = useState('');
 
@@ -52,6 +54,8 @@ const storeContacts = async (contacts) => {
       // Handle potential errors (e.g., return an empty array)
     }
   };
+
+
 
 
 const AddContactScreen = ({ navigation }) => {
@@ -157,6 +161,26 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     padding: 8,
     marginBottom: 10,
+  },
+  searchInput: {
+    // Styles for search bar input
+    fontSize: 16,
+    padding: 10,
+    backgroundColor: '#f5f5f5', // Light background
+    borderRadius: 5, // Rounded corners
+  },
+  contactItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd', // Light border
+  },
+  contactName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  contactCategory: {
+    fontSize: 14,
+    color: '#ccc', // Light gray text for category
   },
 });
 
