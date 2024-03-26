@@ -2,7 +2,33 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
 import { Linking } from 'react-native';
+const [searchTerm, setSearchTerm] = useState('');
 
+
+
+const filteredContacts = contacts.filter((contact) =>
+  contact.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
+return (
+  <View style={styles.container}>
+    <TextInput
+      style={styles.input}
+      placeholder="Search Contacts"
+      value={searchTerm}
+      onChangeText={setSearchTerm}
+    />
+    {searchTerm ? (
+      <FlatList
+        data={filteredContacts}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.name} // Unique key for each item
+      />
+    ) : (
+      {/* Render the full contact list if no search term */}
+      <FlatList data={contacts} renderItem={renderItem} keyExtractor={(item) => item.name} />
+    )}
+  </View>
+);
 
 // function to store contacts
 
